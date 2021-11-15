@@ -1,7 +1,7 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const usersRoutes = require('./routes/users');
-const cardsRoutes = require('./routes/cards');
+const express = require("express");
+const mongoose = require("mongoose");
+const usersRoutes = require("./routes/users");
+const cardsRoutes = require("./routes/cards");
 
 const { PORT = 3000 } = process.env;
 
@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // подключение к серверу mongo
-mongoose.connect('mongodb://localhost:27017/mestodb', {
+mongoose.connect("mongodb://localhost:27017/mestodb", {
   useNewUrlParser: true,
 });
 
@@ -21,7 +21,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '618e3e364782cd6ebffaf873',
+    _id: "618e3e364782cd6ebffaf873",
   };
 
   next();
@@ -29,8 +29,8 @@ app.use((req, res, next) => {
 
 // рутинг
 
-app.use('/users', usersRoutes);
-app.use('/cards', cardsRoutes);
+app.use("/users", usersRoutes);
+app.use("/cards", cardsRoutes);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);

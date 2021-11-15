@@ -14,10 +14,23 @@ module.exports.getUserId = (req, res) => {
   }
   res.send(User[id]);
 };
+
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
+    .then((user) => res.send({ data: user }))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+module.exports.updateAvatar = (req, res) => {
+  User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, { new: true })
+    .then((user) => res.send({ data: user }))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+module.exports.updateProfile = (req, res) => {
+  User.findByIdAndUpdate(req.user._id, req.body, { new: true })
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
