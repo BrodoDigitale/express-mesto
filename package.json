@@ -1,7 +1,7 @@
 {
   "name": "express-mesto",
   "version": "1.0.0",
-  "description": "## Директории",
+  "description": "MESTO is a service for sharing photos",
   "main": "app.js",
   "scripts": {
     "lint": "npx eslint .",
@@ -21,15 +21,13 @@
   "homepage": "https://github.com/BrodoDigitale/express-mesto#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.25.3",
     "express": "^4.17.1",
     "mongoose": "^6.0.12"
   },
   "devDependencies": {
     "eslint": "^8.2.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-react": "^7.27.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.3",
     "nodemon": "^2.0.15"
   }
 }

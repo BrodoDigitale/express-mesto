@@ -1,7 +1,8 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const usersRoutes = require("./routes/users");
-const cardsRoutes = require("./routes/cards");
+const express = require('express');
+const mongoose = require('mongoose');
+const usersRoutes = require('./routes/users');
+const cardsRoutes = require('./routes/cards');
+const { notFoundErrorStatus } = require('./utils');
 
 const { PORT = 3000 } = process.env;
 
@@ -13,7 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // подключение к серверу mongo
-mongoose.connect("mongodb://localhost:27017/mestodb", {
+mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
 
@@ -21,7 +22,7 @@ mongoose.connect("mongodb://localhost:27017/mestodb", {
 
 app.use((req, res, next) => {
   req.user = {
-    _id: "6192a721c403c4b5a54e5e59",
+    _id: '6192a721c403c4b5a54e5e59',
   };
 
   next();
@@ -29,8 +30,11 @@ app.use((req, res, next) => {
 
 // рутинг
 
-app.use("/users", usersRoutes);
-app.use("/cards", cardsRoutes);
+app.use('/users', usersRoutes);
+app.use('/cards', cardsRoutes);
+app.use((req, res) => {
+  res.status(notFoundErrorStatus).send({ message: 'Запрашиваемая страница не найдена' });
+});
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);

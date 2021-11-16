@@ -27,6 +27,10 @@ module.exports.deleteCard = (req, res) => {
         res.status(notFoundErrorStatus).send({ message: 'Карточка не найдена'});
         return;
       }
+      if (err.name === "CastError") {
+        res.status(invalidDataErrorStatus).send({ message: 'Невалидный id'});
+        return;
+      }
       res.status(generalErrorStatus).send({ message: `Произошла ошибка ${err.name}: ${err.message}`});
     });
 };
@@ -34,10 +38,10 @@ module.exports.deleteCard = (req, res) => {
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id;
-  Card.create({ name, link, owner })
+  Card.create({ name, link, owner }, { runValidators: true })
     .then((card) => res.status(200).send(card))
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (err.name === "ValidationError") {
         res.status(invalidDataErrorStatus).send({ message: 'Введены некорректные данные'});
         return;
       }
