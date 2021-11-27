@@ -5,7 +5,7 @@ const { notFoundErrorStatus, generalErrorStatus, invalidCredentialsErrorStatus }
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
-  User.findOne({ email })
+  User.findOne({ email }).select('+password')
     .orFail(new Error('Not found'))
     .then((user) => { bcrypt.compare(password, user.password); })
     .then((matched, user) => {
