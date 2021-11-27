@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const login = require('./controllers/login');
+const createUser = require('./controllers/users');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 const { notFoundErrorStatus } = require('./utils');
@@ -29,7 +31,8 @@ app.use((req, res, next) => {
 });
 
 // рутинг
-
+app.post('/signin', login);
+app.post('/signup', createUser);
 app.use('/users', usersRoutes);
 app.use('/cards', cardsRoutes);
 app.use((req, res) => {
