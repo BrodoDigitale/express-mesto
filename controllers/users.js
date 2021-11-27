@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const { notFoundErrorStatus, generalErrorStatus, invalidDataErrorStatus } = require('../utils');
 
@@ -31,9 +32,39 @@ module.exports.getUserId = (req, res) => {
     });
 };
 
+module.exports.getCurrentUser = (req, res) => {
+  User.findById(req.user._id)
+    .orFail(new Error('Not found'))
+    .then((user) => res.status(200).send(user))
+    .catch((err) => {
+      if (err.message === 'Not found') {
+        res.status(notFoundErrorStatus).send({ message: 'Запрашиваемый пользователь не найден' });
+        return;
+      }
+      if (err.name === 'CastError') {
+        res.status(invalidDataErrorStatus).send({ message: 'Невалидный id' });
+        return;
+      }
+      res.status(generalErrorStatus).send({ message: `Произошла ошибка ${err.name}: ${err.message}` });
+    });
+};
+
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar }, { runValidators: true })
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      hash,
+    }, { runValidators: true }))
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {

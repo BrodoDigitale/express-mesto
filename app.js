@@ -5,6 +5,7 @@ const createUser = require('./controllers/users');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 const { notFoundErrorStatus } = require('./utils');
+const auth = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
 
@@ -20,25 +21,18 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
 
-// имитация авторизации
-
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6192a721c403c4b5a54e5e59',
-  };
-
-  next();
-});
-
 // рутинг
 app.post('/signin', login);
 app.post('/signup', createUser);
-app.use('/users', usersRoutes);
-app.use('/cards', cardsRoutes);
 app.use((req, res) => {
   res.status(notFoundErrorStatus).send({ message: 'Запрашиваемая страница не найдена' });
 });
-
+// авторизация
+app.use(auth);
+// роуты, защищённые авторизацией
+app.use('/users', usersRoutes);
+app.use('/me', usersRoutes);
+app.use('/cards', cardsRoutes);
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
 });
