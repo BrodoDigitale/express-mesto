@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const login = require('./controllers/login');
-const createUser = require('./controllers/users');
+const { login } = require('./controllers/login');
+const { createUser } = require('./controllers/users');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 const { notFoundErrorStatus } = require('./utils');
@@ -24,9 +24,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 // рутинг
 app.post('/signin', login);
 app.post('/signup', createUser);
-app.use((req, res) => {
-  res.status(notFoundErrorStatus).send({ message: 'Запрашиваемая страница не найдена' });
-});
 // авторизация
 app.use(auth);
 // роуты, защищённые авторизацией
@@ -35,4 +32,7 @@ app.use('/me', usersRoutes);
 app.use('/cards', cardsRoutes);
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
+});
+app.use((req, res) => {
+  res.status(notFoundErrorStatus).send({ message: 'Запрашиваемая страница не найдена' });
 });
