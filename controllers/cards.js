@@ -16,11 +16,14 @@ module.exports.getCards = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
+  const owner = req.user._id;
   Card.findById(cardId)
     .orFail(new Error('Not found'))
     .then((card) => {
-      card.delete();
-      return res.status(200).send({ message: 'Пост удален' });
+      if (card.ownerId === owner) {
+        card.delete();
+        res.status(200).send({ message: 'Пост удален' });
+      }
     })
     .catch((err) => {
       if (err.message === 'Not found') {
