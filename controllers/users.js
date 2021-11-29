@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
-const { notFoundErrorStatus, generalErrorStatus, invalidDataErrorStatus } = require('../utils');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -8,10 +7,10 @@ module.exports.getUsers = (req, res) => {
     .then((users) => res.status(200).send(users))
     .catch((err) => {
       if (err.message === 'Not found') {
-        res.status(notFoundErrorStatus).send({ message: 'Пользователи не найдены' });
+        res.status(404).send({ message: 'Пользователи не найдены' });
         return;
       }
-      res.status(generalErrorStatus).send({ message: `Произошла ошибка ${err.name}: ${err.message}` });
+      res.status(500).send({ message: `Произошла ошибка ${err.name}: ${err.message}` });
     });
 };
 
@@ -21,14 +20,14 @@ module.exports.getUserId = (req, res) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.message === 'Not found') {
-        res.status(notFoundErrorStatus).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
         return;
       }
       if (err.name === 'CastError') {
-        res.status(invalidDataErrorStatus).send({ message: 'Невалидный id' });
+        res.status(401).send({ message: 'Невалидный id' });
         return;
       }
-      res.status(generalErrorStatus).send({ message: `Произошла ошибка ${err.name}: ${err.message}` });
+      res.status(500).send({ message: `Произошла ошибка ${err.name}: ${err.message}` });
     });
 };
 
@@ -38,14 +37,14 @@ module.exports.getCurrentUser = (req, res) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.message === 'Not found') {
-        res.status(notFoundErrorStatus).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
         return;
       }
       if (err.name === 'CastError') {
-        res.status(invalidDataErrorStatus).send({ message: 'Невалидный id' });
+        res.status(401).send({ message: 'Невалидный id' });
         return;
       }
-      res.status(generalErrorStatus).send({ message: `Произошла ошибка ${err.name}: ${err.message}` });
+      res.status(500).send({ message: `Произошла ошибка ${err.name}: ${err.message}` });
     });
 };
 
@@ -68,10 +67,10 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(invalidDataErrorStatus).send({ message: 'Введены некорректные данные' });
+        res.status(401).send({ message: 'Введены некорректные данные' });
         return;
       }
-      res.status(generalErrorStatus).send({ message: `Произошла ошибка ${err.name}: ${err.message}` });
+      res.status(500).send({ message: `Произошла ошибка ${err.name}: ${err.message}` });
     });
 };
 
@@ -85,14 +84,14 @@ module.exports.updateAvatar = (req, res) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.message === 'Not found') {
-        res.status(notFoundErrorStatus).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
         return;
       }
       if (err.name === 'ValidationError') {
-        res.status(invalidDataErrorStatus).send({ message: 'Введены некорректные данные' });
+        res.status(401).send({ message: 'Введены некорректные данные' });
         return;
       }
-      res.status(generalErrorStatus).send({ message: `Произошла ошибка ${err.name}: ${err.message}` });
+      res.status(500).send({ message: `Произошла ошибка ${err.name}: ${err.message}` });
     });
 };
 
@@ -102,13 +101,13 @@ module.exports.updateProfile = (req, res) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.message === 'Not found') {
-        res.status(notFoundErrorStatus).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
         return;
       }
       if (err.name === 'ValidationError') {
-        res.status(invalidDataErrorStatus).send({ message: 'Введены некорректные данные' });
+        res.status(401).send({ message: 'Введены некорректные данные' });
         return;
       }
-      res.status(generalErrorStatus).send({ message: `Произошла ошибка ${err.name}: ${err.message}` });
+      res.status(500).send({ message: `Произошла ошибка ${err.name}: ${err.message}` });
     });
 };

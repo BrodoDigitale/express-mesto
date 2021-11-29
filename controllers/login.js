@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const { notFoundErrorStatus, generalErrorStatus, invalidCredentialsErrorStatus } = require('../utils');
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
@@ -15,13 +14,13 @@ module.exports.login = (req, res) => {
     })
     .catch((err) => {
       if (err.message === 'Not found') {
-        res.status(notFoundErrorStatus).send({ message: 'Неправильные почта или пароль' });
+        res.status(404).send({ message: 'Неправильные почта или пароль' });
         return;
       }
       if (err.name === 'IncorrectCredentials') {
-        res.status(invalidCredentialsErrorStatus).send({ message: 'Неправильные почта или пароль' });
+        res.status(401).send({ message: 'Неправильные почта или пароль' });
         return;
       }
-      res.status(generalErrorStatus).send({ message: `Произошла ошибка ${err.name}: ${err.message}` });
+      res.status(500).send({ message: `Произошла ошибка ${err.name}: ${err.message}` });
     });
 };

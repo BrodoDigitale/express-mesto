@@ -1,16 +1,17 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const { login } = require('./controllers/login');
 const { createUser } = require('./controllers/users');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
-const { notFoundErrorStatus } = require('./utils');
 const auth = require('./middlewares/auth');
+const errorsHandler = require('./middlewares/errorsHandler');
 
 const { PORT = 3000 } = process.env;
 
 const app = express();
-
+app.use(cookieParser());
 // Парсер данных
 
 app.use(express.json());
@@ -30,9 +31,12 @@ app.use(auth);
 app.use('/users', usersRoutes);
 app.use('/me', usersRoutes);
 app.use('/cards', cardsRoutes);
+app.use((req, res) => {
+  res.status(404).send({ message: 'Запрашиваемая страница не найдена' });
+});
+// обработка ошибок
+app.use(errorsHandler);
+
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
-});
-app.use((req, res) => {
-  res.status(notFoundErrorStatus).send({ message: 'Запрашиваемая страница не найдена' });
 });
