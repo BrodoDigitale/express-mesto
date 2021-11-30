@@ -6,7 +6,6 @@ const { createUser } = require('./controllers/users');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 const auth = require('./middlewares/auth');
-const errorsHandler = require('./middlewares/errorsHandler');
 
 const { PORT = 3000 } = process.env;
 
@@ -29,13 +28,20 @@ app.post('/signup', createUser);
 app.use(auth);
 // роуты, защищённые авторизацией
 app.use('/users', usersRoutes);
-app.use('/me', usersRoutes);
 app.use('/cards', cardsRoutes);
+
 app.use((req, res) => {
   res.status(404).send({ message: 'Запрашиваемая страница не найдена' });
 });
 // обработка ошибок
-app.use(errorsHandler);
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  if (err.statusCode === 500) {
+    res.status(500).send({ message: `На сервере произошла ошибка ${err.name}: ${err.message}` });
+    return;
+  }
+  res.status(err.statusCode).send({ message: err.message });
+});
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);

@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
@@ -12,15 +12,5 @@ module.exports.login = (req, res) => {
       );
       res.cookie('jwt', token, { httpOnly: true }).send({ message: 'Вы успешно авторизованы' });
     })
-    .catch((err) => {
-      if (err.message === 'Not found') {
-        res.status(404).send({ message: 'Неправильные почта или пароль' });
-        return;
-      }
-      if (err.name === 'IncorrectCredentials') {
-        res.status(401).send({ message: 'Неправильные почта или пароль' });
-        return;
-      }
-      res.status(500).send({ message: `Произошла ошибка ${err.name}: ${err.message}` });
-    });
+    .catch(next);
 };

@@ -15,19 +15,18 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(cardId)
     .orFail(new NotFoundError('Карточка не найдена'))
     .then((card) => {
-      if (req.user._id !== card.owner.toString()) {
-        req.end();
-        throw new AccessDeniedError('Карточку может удалить только владелец');
+      if (req.user._id.toString() === card.owner.toString()) {
+        card.delete();
+        res.status(200).send({ message: 'Пост удален' });
       }
-      card.delete();
-      res.status(200).send({ message: 'Пост удален' });
+      throw new AccessDeniedError('Карточку может удалить только владелец');
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new InvalidDataError('Невалидный id');
+        next(new InvalidDataError('Невалидный id'));
       }
-    })
-    .catch(next);
+      next(err);
+    });
 };
 
 module.exports.createCard = (req, res, next) => {
@@ -36,11 +35,11 @@ module.exports.createCard = (req, res, next) => {
   Card.create({ name, link, owner })
     .then((card) => res.status(200).send(card))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        throw new InvalidDataError('Невалидный id');
+      if (err.name === 'ValidationError') {
+        next(new InvalidDataError('Введены некорректные данные'));
       }
-    })
-    .catch(next);
+      next(err);
+    });
 };
 
 module.exports.likeCard = (req, res, next) => {
@@ -53,10 +52,10 @@ module.exports.likeCard = (req, res, next) => {
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new InvalidDataError('Введены неккорктные данные');
+        next(new InvalidDataError('Введены некорректные данные'));
       }
-    })
-    .catch(next);
+      next(err);
+    });
 };
 
 module.exports.dislikeCard = (req, res, next) => {
@@ -69,8 +68,8 @@ module.exports.dislikeCard = (req, res, next) => {
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new InvalidDataError('Введены неккорктные данные');
+        next(new InvalidDataError('Введены некорректные данные'));
       }
-    })
-    .catch(next);
+      next(err);
+    });
 };
