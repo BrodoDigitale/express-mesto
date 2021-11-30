@@ -1,6 +1,8 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
+const { celebrate, Joi } = require('celebrate');
+const { errors } = require('celebrate');
 const { login } = require('./controllers/login');
 const { createUser } = require('./controllers/users');
 const usersRoutes = require('./routes/users');
@@ -22,8 +24,25 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 });
 
 // рутинг
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', celebrate(
+  {
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
+    }),
+  },
+), login);
+app.post('/signup', celebrate(
+  {
+    body: Joi.object().keys({
+      name: Joi.string().min(2).max(30),
+      avatar: Joi.string().pattern(/https?:\/\/[\w-]+.[a-z.]+[/*[a-z#]+]?'/im),
+      about: Joi.string().min(2).max(30),
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
+    }),
+  },
+), createUser);
 // авторизация
 app.use(auth);
 // роуты, защищённые авторизацией
@@ -33,6 +52,8 @@ app.use('/cards', cardsRoutes);
 app.use((req, res) => {
   res.status(404).send({ message: 'Запрашиваемая страница не найдена' });
 });
+// обработка ошибок celebrate
+app.use(errors());
 // обработка ошибок
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {

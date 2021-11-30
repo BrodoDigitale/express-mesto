@@ -46,7 +46,7 @@ const userSchema = new mongoose.Schema({
     select: false,
   },
 });
-
+// метод модели пользователя для поиска по емейлу и паролю
 userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
