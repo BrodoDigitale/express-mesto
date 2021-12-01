@@ -2,6 +2,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const { celebrate, Joi } = require('celebrate');
+const { validator } = require('validator');
 const { errors } = require('celebrate');
 const { login } = require('./controllers/login');
 const { createUser } = require('./controllers/users');
@@ -37,7 +38,9 @@ app.post('/signup', celebrate(
   {
     body: Joi.object().keys({
       name: Joi.string().min(2).max(30),
-      avatar: Joi.string().pattern(/https?:\/\/[\w-]+.[a-z.]+[/*[a-z#]+]?'/im),
+      avatar: Joi.string().custom((value) => {
+        validator.isURL(value, { require_protocol: true });
+      }),
       about: Joi.string().min(2).max(30),
       email: Joi.string().required().email(),
       password: Joi.string().required().min(8),

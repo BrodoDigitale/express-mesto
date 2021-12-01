@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const { isEmail } = require('validator');
-const InvalidCredentialsError = require('../errors/invalid-credentials-err');
+const { isUrl } = require('validator');
+const AuthError = require('../errors/auth-error');
 const NotFoundError = require('../errors/not-found-err');
 
 // Схема пользователя
@@ -25,9 +26,7 @@ const userSchema = new mongoose.Schema({
     required: false,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
-      validator(url) {
-        return /https?:\/\/[\w-]+.[a-z.]+[/*[a-z#]+]?/gim.test(url);
-      },
+      validator: (v) => isUrl(v),
       message: 'Поле avatar не является ссылкой',
     },
   },
@@ -56,7 +55,7 @@ userSchema.statics.findUserByCredentials = function (email, password) {
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            throw new InvalidCredentialsError('Неправильные почта или пароль');
+            throw new AuthError('Неправильные почта или пароль');
           }
           return user;
         });
