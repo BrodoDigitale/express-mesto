@@ -8,6 +8,7 @@ const { createUser } = require('./controllers/users');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 const auth = require('./middlewares/auth');
+const NotFoundError = require('./errors/not-found-err');
 
 const { PORT = 3000 } = process.env;
 
@@ -49,9 +50,10 @@ app.use(auth);
 app.use('/users', usersRoutes);
 app.use('/cards', cardsRoutes);
 
-app.use((req, res) => {
-  res.status(404).send({ message: 'Запрашиваемая страница не найдена' });
+app.use(() => {
+  throw new NotFoundError('Страница не найдена');
 });
+
 // обработка ошибок celebrate
 app.use(errors());
 // обработка ошибок
