@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
-const { validator } = require('validator');
+const validator = require('validator');
+const InvalidDataError = require('../errors/invalid-data-err');
 
 const {
   getUsers,
@@ -29,7 +30,9 @@ router.patch('/me/avatar', celebrate(
   {
     body: Joi.object().keys({
       avatar: Joi.string().custom((value) => {
-        validator.isURL(value, { require_protocol: true });
+        if (!validator.isURL(value, { require_protocol: true })) {
+          throw new InvalidDataError('Поле avatar не является ссылкой');
+        }
       }),
     }),
   },

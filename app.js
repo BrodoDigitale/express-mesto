@@ -10,6 +10,7 @@ const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/not-found-err');
+const InvalidDataError = require('./errors/invalid-data-err');
 
 const { PORT = 3000 } = process.env;
 
@@ -39,7 +40,9 @@ app.post('/signup', celebrate(
     body: Joi.object().keys({
       name: Joi.string().min(2).max(30),
       avatar: Joi.string().custom((value) => {
-        validator.isURL(value, { require_protocol: true });
+        if (!validator.isURL(value, { require_protocol: true })) {
+          throw new InvalidDataError('Поле avatar не является ссылкой');
+        }
       }),
       about: Joi.string().min(2).max(30),
       email: Joi.string().required().email(),
@@ -52,10 +55,10 @@ app.use(auth);
 // роуты, защищённые авторизацией
 app.use('/users', usersRoutes);
 app.use('/cards', cardsRoutes);
-
-app.use(() => {
+// eslint-disable-next-line no-unused-vars
+app.use(('*', (req, res, next) => {
   throw new NotFoundError('Страница не найдена');
-});
+}));
 
 // обработка ошибок celebrate
 app.use(errors());

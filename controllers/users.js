@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-err');
 const InvalidDataError = require('../errors/invalid-data-err');
+const DataBaseError = require('../errors/dataBase-err');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -35,14 +36,14 @@ module.exports.getCurrentUser = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  const {
-    name,
-    about,
-    avatar,
-    email,
-    password,
-  } = req.body;
-  bcrypt.hash(password, 10)
+  // eslint-disable-next-line object-curly-newline
+  const { name, about, avatar, email, password } = req.body;
+  User.findOne({ email })
+    .then((user) => {
+      if (user) {
+        throw new DataBaseError('Данный емейл уже зарегистрирован');
+      } bcrypt.hash(password, 10);
+    })
     .then((hash) => User.create({
       name,
       about,
@@ -50,7 +51,13 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.status(200).send({
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+      _id: user._id,
+    }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new InvalidDataError('Введены некорректные данные'));
