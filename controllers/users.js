@@ -42,7 +42,7 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => {
       if (user) {
         throw new DataBaseError('Данный емейл уже зарегистрирован');
-      } bcrypt.hash(password, 10);
+      } return bcrypt.hash(password, 10);
     })
     .then((hash) => User.create({
       name,

@@ -33,6 +33,7 @@ router.patch('/me/avatar', celebrate(
         if (!validator.isURL(value, { require_protocol: true })) {
           throw new InvalidDataError('Поле avatar не является ссылкой');
         }
+        return value;
       }),
     }),
   },

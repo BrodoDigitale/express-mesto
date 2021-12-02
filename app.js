@@ -2,13 +2,13 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const { celebrate, Joi } = require('celebrate');
-const { validator } = require('validator');
 const { errors } = require('celebrate');
+const validator = require('validator');
+const auth = require('./middlewares/auth');
 const { login } = require('./controllers/login');
 const { createUser } = require('./controllers/users');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
-const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/not-found-err');
 const InvalidDataError = require('./errors/invalid-data-err');
 
@@ -43,6 +43,7 @@ app.post('/signup', celebrate(
         if (!validator.isURL(value, { require_protocol: true })) {
           throw new InvalidDataError('Поле avatar не является ссылкой');
         }
+        return value;
       }),
       about: Joi.string().min(2).max(30),
       email: Joi.string().required().email(),
