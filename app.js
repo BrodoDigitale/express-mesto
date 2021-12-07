@@ -11,6 +11,7 @@ const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 const NotFoundError = require('./errors/not-found-err');
 const InvalidDataError = require('./errors/invalid-data-err');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { PORT = 3000 } = process.env;
 
@@ -25,7 +26,8 @@ app.use(express.urlencoded({ extended: true }));
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
-
+// логгер запросов
+app.use(requestLogger);
 // рутинг
 app.post('/signin', celebrate(
   {
@@ -60,10 +62,11 @@ app.use('/cards', cardsRoutes);
 app.use(('*', (req, res, next) => {
   throw new NotFoundError('Страница не найдена');
 }));
-
+// подключаем логгер ошибок (! до обработчиков ошибок)
+app.use(errorLogger);
 // обработка ошибок celebrate
 app.use(errors());
-// обработка ошибок
+// централизованный обработчик ошибок
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   if (err.statusCode === 500) {
