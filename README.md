@@ -6,7 +6,7 @@
 `/controllers` — folder with files of user and card controllers  
 `/models` — files with description of user and card schemas  
  
-# Tech stack:
+## Tech stack:
 
 - NodeJs
 - Express
