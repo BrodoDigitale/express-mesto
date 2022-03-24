@@ -1,12 +1,15 @@
 #  Mesto project: back-end part
 
-## Directories
+
+## Directories:
 
 `/routes` — folder with router files  
 `/controllers` — folder with files of user and card controllers  
 `/models` — files with description of user and card schemas  
  
+ 
 ## Tech stack:
+ 
 
 - NodeJs
 - Express
@@ -14,7 +17,7 @@
 - Nodemon
 - Mongoose
 
-## Commands
+## Commands:
 
 `npm run start` — starts the server  
 `npm run dev` — starts the server in hot-reload mode
